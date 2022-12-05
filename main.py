@@ -1,6 +1,8 @@
 import time
+import subprocess
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+
 
 class NewFileHandler(FileSystemEventHandler):
     def on_created(self, event):
@@ -9,11 +11,12 @@ class NewFileHandler(FileSystemEventHandler):
             print(f"New file found: {event.src_path}")
             # TODO: pass the file to the other script by argument
 
+
 # Set the folder to watch
-folder_to_watch = "path/to/folder"
+folder_to_watch = "input"
 
 # Set the script to run when a new file is found
-script_to_run = "path/to/script.py"
+script_to_run = "NewFileFound.py"
 
 # Create an event handler for new files
 event_handler = NewFileHandler()
@@ -30,7 +33,6 @@ except KeyboardInterrupt:
     observer.stop()
 observer.join()
 
-import subprocess
 
 # ...
 
