@@ -10,7 +10,7 @@ class NewFileHandler(FileSystemEventHandler):
             # TODO: pass the file to the other script by argument
 
 # Set the folder to watch
-folder_to_watch = "input"
+folder_to_watch = "path/to/folder"
 
 # Set the script to run when a new file is found
 script_to_run = "path/to/script.py"
@@ -29,7 +29,6 @@ try:
 except KeyboardInterrupt:
     observer.stop()
 observer.join()
-
 
 import subprocess
 
