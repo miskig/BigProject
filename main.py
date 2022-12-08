@@ -1,45 +1,35 @@
+import os
+import sys
 import time
-import subprocess
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+from datetime import datetime
 
-
-class NewFileHandler(FileSystemEventHandler):
-    def on_created(self, event):
-        if not event.is_directory:
-            # A new file has been created, pass it to the other script
-            print(f"New file found: {event.src_path}")
-            # TODO: pass the file to the other script by argument
-
+import pytesseract
+from PIL import Image
+import pyodbc
 
 # Set the folder to watch
-folder_to_watch = "input"
+folder = 'input'
 
-# Set the script to run when a new file is found
-script_to_run = "NewFileFound.py"
-
-# Create an event handler for new files
-event_handler = NewFileHandler()
-
-# Create an observer to watch the folder
-observer = Observer()
-observer.schedule(event_handler, folder_to_watch, recursive=False)
-observer.start()
-
-try:
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    observer.stop()
-observer.join()
+# Connect to the SQL Server database
 
 
-# ...
+while True:
+    # Get a list of PDF files in the folder
+    pdf_files = [f for f in os.listdir(folder) if f.endswith('.pdf')]
 
-class NewFileHandler(FileSystemEventHandler):
-    def on_created(self, event):
-        if not event.is_directory:
-            # A new file has been created, pass it to the other script
-            print(f"New file found: {event.src_path}")
-            # Run the other script, passing the file as an argument
-            subprocess.run([script_to_run, event.src_path])
+    # Loop through the PDF files
+    for pdf_file in pdf_files:
+        # Use pytesseract to do OCR on the PDF file
+        text = pytesseract.image_to_string(Image.open(folder+"\\"+pdf_file))
+
+        # Insert the file name and text into the database
+        query = 'INSERT INTO HS.Plaintext (file_name, file_text) VALUES (SFileName, Plaintext)'
+
+        filename1 = "output\\"
+        filename1 += datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        file = open(filename1 + '.sql', 'w')
+        file.write(query)
+        file.close()
+
+    # Sleep for 5 seconds before checking the folder again
+    time.sleep(5)
